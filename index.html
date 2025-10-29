@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cape Flats Arts Festival - Events</title>
+    <!-- inline SVG favicon to avoid missing /favicon.ico 404 -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23667eea'/%3E%3Ctext x='50' y='62' font-size='56' text-anchor='middle' fill='white'%3EC%3C/text%3E%3C/svg%3E">
     <style>
         * {
             margin: 0;
@@ -439,7 +441,9 @@
     <div class="container">
         <header>
             <div class="logo">
-                <img src="./CFAF-LOGO.PNG" alt="Cape Flats Arts Festival Logo" style="max-width: 100px; height: auto;">
+                <!-- use lowercase filename (match actual file in repo) and provide inline SVG fallback -->
+                <img src="./CFAF-LOGO.png" alt="Cape Flats Arts Festival Logo" style="max-width: 100px; height: auto;"
+                     onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 200 200%27%3E%3Ccircle cx=%27100%27 cy=%27100%27 r=%27100%27 fill=%27%23667eea%27/%3E%3Ctext x=%27100%27 y=%27120%27 font-size=%2796%27 text-anchor=%27middle%27 fill=%27white%27%3EC%3C/text%3E%3C/svg%3E';">
             </div>
             <h1>Upcoming Events</h1>
         </header>
@@ -478,13 +482,30 @@
             }
         }
 
+        // Improved date parsing: supports yyyy-mm-dd, dd/mm[/yyyy], dd-mm[/yyyy], fallbacks to current year when missing.
         function parseDate(dateStr) {
             if (!dateStr || dateStr.trim() === '') return null;
-            const parts = dateStr.split('/');
-            if (parts.length === 3) {
-                return new Date(2024, parseInt(parts[1]) - 1, parseInt(parts[0]));
+            dateStr = dateStr.trim();
+
+            // ISO: 2024-12-31 or 2024/12/31
+            const iso = dateStr.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);
+            if (iso) {
+                return new Date(parseInt(iso[1], 10), parseInt(iso[2], 10) - 1, parseInt(iso[3], 10));
             }
-            return null;
+
+            // D/M[/YYYY] or D-M[-YYYY]
+            const dmy = dateStr.match(/^(\d{1,2})[\/\-](\d{1,2})(?:[\/\-](\d{2,4}))?$/);
+            if (dmy) {
+                const day = parseInt(dmy[1], 10);
+                const month = parseInt(dmy[2], 10) - 1;
+                let year = dmy[3] ? parseInt(dmy[3], 10) : new Date().getFullYear();
+                if (year < 100) year += 2000; // handle '24' -> 2024
+                return new Date(year, month, day);
+            }
+
+            // fallback: try Date constructor
+            const parsed = new Date(dateStr);
+            return isNaN(parsed.getTime()) ? null : parsed;
         }
 
         function formatDate(startDate, endDate) {
@@ -738,6 +759,11 @@
                         markers.push(marker);
                     }
                 }
+            }
+
+            // ensure lucide icons render in popups / newly inserted DOM
+            if (window.lucide && typeof lucide.createIcons === 'function') {
+                lucide.createIcons();
             }
 
             if (markers.length > 0) {
