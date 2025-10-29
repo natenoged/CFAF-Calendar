@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cape Flats Arts Festival - Events</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #000000 0%, #0c0018 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            
+            color: white;
+            margin-bottom: 30px;
+            padding: 20px;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 20px;
+          width: fit-content;
+          margin: auto;
+        }
+
+        h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+
+        .tabs {
+            display: flex;
+          
+            justify-content: center;
+            border-radius: 20px;
+            margin-bottom: 30px;
+       
+            
+            width:min-content;
+            margin: auto;
+            overflow: hidden;
+        }
+
+        .tab {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: .8em;
+            font-weight: 400;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: none;
+        }
+
+        .tab:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scaleX(-2px);
+        }
+
+        .tab.active {
+            background: white;
+            color: #667eea;
+        }
+
+        .view {
+            display: none;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        .events-grid {
+            display: grid;
+            gap: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        }
+
+        .event-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .event-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .event-header {
+            background: linear-gradient(135deg, #e81c52 0%, #f5576c 100%);
+            padding: 20px;
+            color: white;
+        }
+
+        .event-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 6px;
+            line-height: 1.3;
+        }
+
+        .event-date {
+            font-size: 1.1em;
+            opacity: 0.95;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .event-body {
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .event-meta {
+            margin-bottom: 15px;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 10px;
+            color: #555;
+        }
+
+        .meta-icon {
+            
+            
+            
+
+        }
+
+        .event-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+
+        .event-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: auto;
+        }
+
+        .btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            flex: 1;
+            min-width: 10px;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #69636dcc 0%, #625b69aa 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9em;
+            font-weight: 400;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(208, 102, 234, 0.4);
+        }
+
+        .btn-rsvp {
+            background: linear-gradient(135deg, #e81c52 0%, #f5576c 100%);
+            color: white;
+            
+        }
+
+        .btn-rsvp:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 87, 108, 0.4);
+        }
+
+        .calendar-dropdown {
+            position: relative;
+            flex: 1;
+            min-width: 140px;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            bottom: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            margin-bottom: 5px;
+            z-index: 10;
+        }
+
+        .dropdown-content.show {
+            display: block;
+        }
+
+        .dropdown-item {
+            padding: 12px 20px;
+            color: #333;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+
+        .dropdown-item:hover {
+            background: #f0f0f0;
+        }
+
+        .dropdown-item:first-child {
+            border-radius: 8px 8px 0 0;
+        }
+
+        .dropdown-item:last-child {
+            border-radius: 0 0 8px 8px;
+        }
+
+        /* Map View Styles */
+        #map {
+            width: 100%;
+            height: 600px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .map-container {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .loading {
+            text-align: center;
+            color: white;
+            font-size: 1.5em;
+            padding: 50px;
+        }
+
+        .map-toggle {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 400;
+            transition: all 0.3s ease;
+            border: none;
+            margin: 0 auto 30px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            backdrop-filter: blur(10px);
+        }
+
+        .map-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .map-toggle.active {
+            background: white;
+            color: #667eea;
+        }
+
+        .map-section {
+            display: none;
+            margin-bottom: 30px;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .map-section.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* List View Styles */
+        .list-view {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .list-item {
+            
+            padding: 25px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 25px;
+        }
+
+        .list-item:last-child {
+            
+        }
+
+        .list-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            gap: 20px;
+        }
+
+        .list-item-title {
+            font-size: 1.6em;
+            font-weight: bold;
+            color: #430f72;
+            margin-bottom: 8px;
+        }
+
+        .list-item-date {
+            font-size: 1.1em;
+            align-items: center;
+            justify-content: center;
+
+            color: #d7053c;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .list-item-meta {
+            display: flex;
+            margin-bottom: 15px;
+            flex-direction: column;
+        }
+
+        .list-item_description {
+            color: #666;
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+
+        .list-item-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: space-between;
+            align-items: end;
+            margin-top: 20px;
+            
+        }
+
+        /* Lucide Icon Styles */
+        [data-lucide] {
+            width: 15px;
+            height: 15px;
+            opacity: 0.6;
+            
+           
+            
+           
+            
+        }
+
+    
+    
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            .events-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .event-actions, .list-item-actions {
+                flex-direction: column;
+            }
+
+            .btn, .calendar-dropdown {
+                flex: 1 1 100%;
+                min-width: 100%;
+            }
+
+            .list-item-header {
+                flex-direction: column;
+            }
+
+            .list-item-date {
+                white-space: normal;
+            }
+
+            #map {
+                height: 400px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <img src="CFAF-LOGO.PNG" alt="Cape Flats Arts Festival Logo" style="max-width: 100px; height: auto;">
+            </div>
+            <h1>Upcoming Events</h1>
+        </header>
+        
+        <button class="map-toggle" onclick="toggleMap()">
+            <i data-lucide="map"></i>  Map
+        </button>
+
+        <div id="map-section" class="map-section">
+            <div class="map-container">
+                <div id="map"></div>
+            </div>
+        </div>
+
+        <div id="list-container" class="loading">Loading events...</div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQf2e9bxFITuMX_zVeWYGUgt2TaFvQ24wCDABnKNa47i8ejVEybw7BCAGwh-98zqM1lR0b0MfR9t0WG/pub?output=csv';
+        
+        let allEvents = [];
+        let map = null;
+        let markers = [];
+
+        function toggleMap() {
+            const mapSection = document.getElementById('map-section');
+            const mapToggle = document.querySelector('.map-toggle');
+            
+            mapSection.classList.toggle('active');
+            mapToggle.classList.toggle('active');
+            
+            if (mapSection.classList.contains('active') && !map) {
+                initMap();
+            }
+        }
+
+        function parseDate(dateStr) {
+            if (!dateStr || dateStr.trim() === '') return null;
+            const parts = dateStr.split('/');
+            if (parts.length === 3) {
+                return new Date(2024, parseInt(parts[1]) - 1, parseInt(parts[0]));
+            }
+            return null;
+        }
+
+        function formatDate(startDate, endDate) {
+            if (!startDate) return 'Date TBA';
+            
+            const options = { day: 'numeric', month: 'long', year: 'numeric' };
+            const start = startDate.toLocaleDateString('en-GB', options);
+            
+            if (endDate && endDate.getTime() !== startDate.getTime()) {
+                const end = endDate.toLocaleDateString('en-GB', options);
+                return `${start} - ${end}`;
+            }
+            
+            return start;
+        }
+
+        function generateICS(event) {
+            const startDate = event.startDate || new Date();
+            const endDate = event.endDate || startDate;
+            
+            const formatICSDate = (date) => {
+                return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+            };
+
+            const icsContent = [
+                'BEGIN:VCALENDAR',
+                'VERSION:2.0',
+                'PRODID:-//Cape Flats Arts Festival//Events//EN',
+                'BEGIN:VEVENT',
+                `DTSTART:${formatICSDate(startDate)}`,
+                `DTEND:${formatICSDate(endDate)}`,
+                `SUMMARY:${event.name}`,
+                `DESCRIPTION:${event.description.replace(/\n/g, '\\n')}`,
+                `LOCATION:${event.location || ''}`,
+                'END:VEVENT',
+                'END:VCALENDAR'
+            ].join('\r\n');
+
+            return 'data:text/calendar;charset=utf-8,' + encodeURIComponent(icsContent);
+        }
+
+        function generateGoogleCalendar(event) {
+            const startDate = event.startDate || new Date();
+            const endDate = event.endDate || startDate;
+            
+            const formatGoogleDate = (date) => {
+                return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+            };
+
+            const params = new URLSearchParams({
+                action: 'TEMPLATE',
+                text: event.name,
+                dates: `${formatGoogleDate(startDate)}/${formatGoogleDate(endDate)}`,
+                details: event.description,
+                location: event.location || ''
+            });
+
+            return `https://calendar.google.com/calendar/render?${params.toString()}`;
+        }
+
+        function createEventCard(event) {
+            const card = document.createElement('div');
+            card.className = 'event-card';
+
+            const dateStr = formatDate(event.startDate, event.endDate);
+            
+            card.innerHTML = `
+                <div class="event-header">
+                    <div class="event-title">${event.name}</div>
+                    <div class="event-date">
+                        <i data-lucide="calendar"></i> ${dateStr}
+                    </div>
+                </div>
+                <div class="event-body">
+                    <div class="event-meta">
+                        ${event.time ? `
+                            <div class="meta-item">
+                                <span class="meta-icon"><i data-lucide="clock"></i></span>
+                                <span>${event.time}</span>
+                            </div>
+                        ` : ''}
+                        ${event.location ? `
+                            <div class="meta-item">
+                                <span class="meta-icon"><i data-lucide="map-pin"></i></span>
+                                <span>${event.location}</span>
+                            </div>
+                        ` : ''}
+                    </div>
+                    <div class="event-description">${event.description}</div>
+                    <div class="event-actions">
+                        ${event.rsvp ? `
+                            <a href="${event.rsvp}" target="_blank" class="btn btn-rsvp">
+                                <i data-lucide="ticket"></i> RSVP / Get Tickets
+                            </a>
+                        ` : ''}
+                        <div class="calendar-dropdown">
+                            <button class="btn btn-primary" onclick="toggleDropdown(this)">
+                                <i data-lucide="calendar-plus"></i> Add to Calendar
+                            </button>
+                            <div class="dropdown-content">
+                                <a href="${generateGoogleCalendar(event)}" target="_blank" class="dropdown-item">
+                                    <i data-lucide="calendar"></i> Google Calendar
+                                </a>
+                                <a href="${generateICS(event)}" download="${event.name}.ics" class="dropdown-item">
+                                    <i data-lucide="calendar"></i> iCal / Outlook
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            return card;
+        }
+
+        function createListItem(event) {
+            const item = document.createElement('div');
+            item.className = 'list-item';
+
+            const dateStr = formatDate(event.startDate, event.endDate);
+            
+            item.innerHTML = `
+                <div class="list-item-header">
+                    <div>
+                        <div class="list-item-title">${event.name}</div>
+                        <div class="list-item-date">
+                            <i data-lucide="calendar"></i> ${dateStr}
+                        </div>
+                    </div>
+                </div>
+                <div class="list-item-meta">
+                    ${event.time ? `
+                        <div class="meta-item">
+                            <span class="meta-icon"><i data-lucide="clock"></i></span>
+                            <span>${event.time}</span>
+                        </div>
+                    ` : ''}
+                    ${event.location ? `
+                        <div class="meta-item">
+                            <span class="meta-icon"><i data-lucide="map-pin"></i></span>
+                            <span>${event.location}</span>
+                        </div>
+                    ` : ''}
+                </div>
+                <div class="list-item_description">${event.description}</div>
+                <div class="list-item-actions">
+                    <div class="calendar-dropdown">
+                        <button class="btn btn-primary" onclick="toggleDropdown(this)">
+                            <i data-lucide="calendar-plus"></i> Add to Calendar
+                        </button>
+                        <div class="dropdown-content">
+                            <a href="${generateGoogleCalendar(event)}" target="_blank" class="dropdown-item">
+                                <i data-lucide="calendar"></i> Google Calendar
+                            </a>
+                            <a href="${generateICS(event)}" download="${event.name}.ics" class="dropdown-item">
+                                <i data-lucide="calendar"></i> iCal / Outlook
+                            </a>
+                        </div>
+                    </div>
+                    ${event.rsvp ? `
+                        <a href="${event.rsvp}" target="_blank" class="btn btn-rsvp">
+                            <i data-lucide="ticket"></i> RSVP / Get Tickets
+                        </a>
+                    ` : ''}
+                </div>
+            `;
+
+            return item;
+        }
+
+        async function geocodeLocation(location) {
+            if (!location) return null;
+            
+            try {
+                const query = encodeURIComponent(location + ', Cape Town, South Africa');
+                const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&limit=1`);
+                const data = await response.json();
+                
+                if (data && data.length > 0) {
+                    return {
+                        lat: parseFloat(data[0].lat),
+                        lng: parseFloat(data[0].lon)
+                    };
+                }
+            } catch (error) {
+                console.error('Geocoding error:', error);
+            }
+            
+            return null;
+        }
+
+        async function initMap() {
+            map = L.map('map').setView([-33.9249, 18.4241], 11);
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            for (const event of allEvents) {
+                if (event.location) {
+                    const coords = await geocodeLocation(event.location);
+                    if (coords) {
+                        const marker = L.marker([coords.lat, coords.lng]).addTo(map);
+                        
+                        const popupContent = `
+                            <div style="min-width: 250px; max-width: 300px;">
+                                <h3 style="color: #667eea; margin-bottom: 10px;">${event.name}</h3>
+                                <p style="margin-bottom: 5px;"><i data-lucide="calendar" style="width: 16px; height: 16px; vertical-align: middle;"></i> ${formatDate(event.startDate, event.endDate)}</p>
+                                ${event.time ? `<p style="margin-bottom: 5px;"><i data-lucide="clock" style="width: 16px; height: 16px; vertical-align: middle;"></i> ${event.time}</p>` : ''}
+                                <p style="margin-bottom: 15px;"><i data-lucide="map-pin" style="width: 16px; height: 16px; vertical-align: middle;"></i> ${event.location}</p>
+                                ${event.rsvp ? `
+                                    <a href="${event.rsvp}" target="_blank" style="
+                                        display: inline-block;
+                                        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+                                        color: white;
+                                        padding: 10px 20px;
+                                        border-radius: 8px;
+                                        text-decoration: none;
+                                        font-weight: bold;
+                                        margin-bottom: 10px;
+                                        text-align: center;
+                                    ">RSVP / Get Tickets</a><br>
+                                ` : ''}
+                                <a href="${generateGoogleCalendar(event)}" target="_blank" style="
+                                    display: inline-block;
+                                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                                    color: white;
+                                    padding: 10px 20px;
+                                    border-radius: 8px;
+                                    text-decoration: none;
+                                    font-weight: bold;
+                                    margin-right: 5px;
+                                    font-size: 0.9em;
+                                ">📆 Google Cal</a>
+                                <a href="${generateICS(event)}" download="${event.name}.ics" style="
+                                    display: inline-block;
+                                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                                    color: white;
+                                    padding: 10px 20px;
+                                    border-radius: 8px;
+                                    text-decoration: none;
+                                    font-weight: bold;
+                                    font-size: 0.9em;
+                                ">📆 iCal</a>
+                            </div>
+                        `;
+                        
+                        marker.bindPopup(popupContent, {
+                            maxWidth: 320
+                        });
+                        markers.push(marker);
+                    }
+                }
+            }
+
+            if (markers.length > 0) {
+                const group = L.featureGroup(markers);
+                map.fitBounds(group.getBounds().pad(0.1));
+            }
+        }
+
+        function toggleDropdown(btn) {
+            const dropdown = btn.nextElementSibling;
+            const allDropdowns = document.querySelectorAll('.dropdown-content');
+            
+            allDropdowns.forEach(d => {
+                if (d !== dropdown) d.classList.remove('show');
+            });
+            
+            dropdown.classList.toggle('show');
+        }
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.calendar-dropdown')) {
+                document.querySelectorAll('.dropdown-content').forEach(d => {
+                    d.classList.remove('show');
+                });
+            }
+        });
+
+        function initLucideIcons() {
+            lucide.createIcons();
+        }
+
+        Papa.parse(CSV_URL, {
+            download: true,
+            header: true,
+            complete: function(results) {
+                allEvents = results.data
+                    .filter(row => row['Event Name'] && row['Event Name'].trim() !== '')
+                    .map(row => ({
+                        name: row['Event Name'],
+                        startDate: parseDate(row['Start Date']),
+                        endDate: parseDate(row['End Date']),
+                        time: row['Time'] || '',
+                        location: row['Location'] || '',
+                        description: row['Description'] || '',
+                        rsvp: row['RSVP'] || ''
+                    }))
+                    .sort((a, b) => {
+                        if (!a.startDate) return 1;
+                        if (!b.startDate) return -1;
+                        return a.startDate - b.startDate;
+                    });
+
+                const listContainer = document.getElementById('list-container');
+                listContainer.className = 'list-view';
+                listContainer.innerHTML = '';
+
+                if (allEvents.length === 0) {
+                    listContainer.innerHTML = '<div class="loading">No events found. Check back soon!</div>';
+                    return;
+                }
+
+                allEvents.forEach(event => {
+                    listContainer.appendChild(createListItem(event));
+                });
+                initLucideIcons();
+            },
+            error: function(error) {
+                document.getElementById('list-container').innerHTML = 
+                    '<div class="loading">Error loading events. Please try again later.</div>';
+                console.error('Error loading events:', error);
+            }
+        });
+    </script>
+</body>
+</html>
